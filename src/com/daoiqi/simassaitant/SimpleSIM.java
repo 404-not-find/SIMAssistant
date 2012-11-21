@@ -11,20 +11,25 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SimpleSIM extends Activity {
 
 	ListView listview;
 	SIMManager ma;
-	
+	List<Contact> contacts;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,23 +43,24 @@ public class SimpleSIM extends Activity {
 		// listview.setAdapter(s);
 
 		ma = new SIMManager(this);
-		List<Contact> list = ma.getContactByPinyin();
-		for (Contact contact : list) {
+		contacts = ma.getContactByPinyin();
+		for (Contact contact : contacts) {
 			System.out.println(contact);
 		}
 
 		// TODO hashmap 可能是个错误的选项，不方便读取，如果能直接Contact就好了
-		List<Map<String, String>> l = new ArrayList<Map<String, String>>();
-		for (Contact contact : list) {
-			l.add(contact.toHashMap());
-		}
-
-		SimpleAdapter sa = new SimpleAdapter(this, l,
-				R.layout.activity_simple_sim, new String[] { Contact.USER_NAME,
-						Contact.USER_TEL }, new int[] { R.id.user_name,
-						R.id.user_tel });
-
-		listview.setAdapter(sa);
+//		List<Map<String, String>> l = new ArrayList<Map<String, String>>();
+//		for (Contact contact : contacts) {
+//			l.add(contact.toHashMap());
+//		}
+//
+//		SimpleAdapter sa = new SimpleAdapter(this, l,
+//				R.layout.activity_simple_sim, new String[] { Contact.USER_NAME,
+//						Contact.USER_TEL }, new int[] { R.id.user_name,
+//						R.id.user_tel });
+//
+//		listview.setAdapter(sa);
+		refreshListView();
 
 		addAction();
 	}
@@ -79,9 +85,9 @@ public class SimpleSIM extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		//刷新列表最好了
-		if (data != null ) {
+
+		// 刷新列表最好了
+		if (data != null) {
 			Toast.makeText(getApplicationContext(),
 					data.getStringExtra(Contact.USER_TEL), Toast.LENGTH_SHORT)
 					.show();
@@ -94,8 +100,64 @@ public class SimpleSIM extends Activity {
 		return null;
 	}
 
-	public ListView getListView() {
-		return listview;
+	public void refreshListView() {
+		listview.setAdapter(new ContactRowAdapter(contacts));
+	}
+	
+	public void removeContact(int i){
+		listview.removeViewAt(i);
+		contacts.remove(i);
+	}
+
+//	public ListView getListView() {
+//		return listview;
+//	}
+
+	class ContactRowAdapter extends BaseAdapter {
+		List<Contact> contacts;
+		protected LayoutInflater inflater;
+
+		public ContactRowAdapter(List<Contact> contacts) {
+			super();
+			this.contacts = contacts;
+			this.inflater = getLayoutInflater();
+		}
+
+		public int getCount() {
+			return contacts.size();
+		}
+
+		public long getItemId(int position) {
+			return position;
+		}
+
+		public Object getItem(int position) {
+			return contacts.get(position);
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			if (convertView == null) {
+				convertView = inflater.inflate(
+						R.layout.activity_simple_sim, parent, false);
+			}
+
+			try {
+				Contact contact = (Contact) this.getItem(position);
+
+				((TextView) convertView.findViewById(R.id.user_name))
+						.setText(contact.name);
+				((TextView) convertView.findViewById(R.id.user_tel))
+						.setText(contact.tel);
+			} catch (Exception e) {
+				e.printStackTrace();
+				((TextView) convertView.findViewById(R.id.user_name))
+						.setText("");
+				((TextView) convertView.findViewById(R.id.user_tel))
+						.setText("");
+			}
+
+			return convertView;
+		}
 	}
 
 	public static class ContextMenuOption {

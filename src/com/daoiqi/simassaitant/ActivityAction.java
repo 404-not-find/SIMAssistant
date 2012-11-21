@@ -119,14 +119,17 @@ public class ActivityAction {
 
 		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		@SuppressWarnings("unchecked")
-		Map<String, String> contactMap = (Map<String, String>) activity
-				.getListView().getAdapter().getItem(menuInfo.position);
+//		@SuppressWarnings("unchecked")
+//		Map<String, String> contactMap = (Map<String, String>) activity
+//				.getListView().getAdapter().getItem(menuInfo.position);
+//		
+		
 
-		Toast.makeText(activity.getApplicationContext(),
-				contactMap.get(Contact.USER_TEL), Toast.LENGTH_SHORT).show();
-
-		final Contact selectedcontact = Contact.newContact(contactMap);
+//		Toast.makeText(activity.getApplicationContext(),
+//				contactMap.get(Contact.USER_TEL), Toast.LENGTH_SHORT).show();
+//
+//		final Contact selectedcontact = Contact.newContact(contactMap);
+		final Contact selectedcontact = (Contact)activity.listview.getAdapter().getItem(menuInfo.position);
 
 		switch (item.getItemId()) {
 		case ContextMenuOption.EDIT:
@@ -141,20 +144,21 @@ public class ActivityAction {
 			// bundle.putString(Contact.USER_ID, contact.get(Contact.USER_ID));
 			// edit.putExtras(bundle);
 
-			edit.putExtra("oldContact", Contact.newContact(contactMap));
+			edit.putExtra("oldContact", selectedcontact);
 
-			edit.putExtra(Contact.USER_NAME, contactMap.get(Contact.USER_NAME));
-			edit.putExtra(Contact.USER_TEL, contactMap.get(Contact.USER_TEL));
-			edit.putExtra(Contact.USER_ID, contactMap.get(Contact.USER_ID));
+			edit.putExtra(Contact.USER_NAME, selectedcontact.getName());
+			edit.putExtra(Contact.USER_TEL, selectedcontact.getTel());
+			edit.putExtra(Contact.USER_ID,selectedcontact.getId());
 			edit.putExtra(ContactInfoActivity.COMMAND,
 					SimpleSIM.ContextMenuOption.EDIT);
 
 			activity.startActivityForResult(edit, 0);
+			activity.refreshListView();
 			break;
 		case ContextMenuOption.SMS:
 
 			Uri smsToUri = Uri.parse("smsto:"
-					+ contactMap.get(Contact.USER_TEL));
+					+ selectedcontact.getTel());
 			Intent intent = new Intent(android.content.Intent.ACTION_SENDTO,
 					smsToUri);
 			// intent.putExtra("sms_body", "这是内容");
@@ -166,17 +170,18 @@ public class ActivityAction {
 					SimpleSIM.ContextMenuOption.NEW_SIM);
 			newsim.setClass(activity, ContactInfoActivity.class);
 			activity.startActivityForResult(newsim, 0);
+			activity.refreshListView();
 			break;
 		case ContextMenuOption.DELETE:
 			AlertDialog dialog = new AlertDialog.Builder(activity)
 					.setTitle("删除联系人")
 					.setMessage(
 							"确定要删除联系人？" + "\r\n姓名:"
-									+ contactMap.get(Contact.USER_NAME)
+									+ selectedcontact.getName()
 									+ "\r\n电话:"
-									+ contactMap.get(Contact.USER_TEL)
+									+ selectedcontact.getTel()
 									+ "\r\n编号:"
-									+ Integer.parseInt(contactMap.get(Contact.USER_ID))+1)
+									+ Integer.parseInt(selectedcontact.getId())+1)
 					.setPositiveButton("删除", new OnClickListener() {
 
 						public void onClick(DialogInterface dialog, int which) {
@@ -202,7 +207,7 @@ public class ActivityAction {
 							dialog.cancel();
 						}
 					}).show();
-
+			activity.removeContact(menuInfo.position);
 			break;
 		}
 
