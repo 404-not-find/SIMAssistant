@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -87,13 +90,13 @@ public class ActivityAction {
 					ContextMenuInfo arg2) {
 				// TODO Auto-generated method stub
 				menu.setHeaderTitle("操作");
-
-				menu.add(Menu.NONE, SimpleSIM.ContextMenuOption.EDIT,
-						Menu.NONE, "修改");
 				menu.add(Menu.NONE, SimpleSIM.ContextMenuOption.CALL,
 						Menu.NONE, "呼叫");
 				menu.add(Menu.NONE, SimpleSIM.ContextMenuOption.SMS, Menu.NONE,
 						"短信");
+				menu.add(Menu.NONE, SimpleSIM.ContextMenuOption.EDIT,
+						Menu.NONE, "修改");
+				
 				menu.add(Menu.NONE, SimpleSIM.ContextMenuOption.NEW_SIM,
 						Menu.NONE, "新建");
 				menu.add(Menu.NONE, SimpleSIM.ContextMenuOption.DELETE,
@@ -111,7 +114,8 @@ public class ActivityAction {
 	 * @param item
 	 * @param activity
 	 */
-	public static void addContextMenuAction(MenuItem item, SimpleSIM activity) {
+	public static void addContextMenuAction(MenuItem item,
+			final SimpleSIM activity) {
 
 		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
 				.getMenuInfo();
@@ -122,7 +126,7 @@ public class ActivityAction {
 		Toast.makeText(activity.getApplicationContext(),
 				contactMap.get(Contact.USER_TEL), Toast.LENGTH_SHORT).show();
 
-		Contact selectedcontact = Contact.newContact(contactMap);
+		final Contact selectedcontact = Contact.newContact(contactMap);
 
 		switch (item.getItemId()) {
 		case ContextMenuOption.EDIT:
@@ -136,13 +140,14 @@ public class ActivityAction {
 			// contact.get(Contact.USER_TEL));
 			// bundle.putString(Contact.USER_ID, contact.get(Contact.USER_ID));
 			// edit.putExtras(bundle);
-			
+
 			edit.putExtra("oldContact", Contact.newContact(contactMap));
-			
+
 			edit.putExtra(Contact.USER_NAME, contactMap.get(Contact.USER_NAME));
 			edit.putExtra(Contact.USER_TEL, contactMap.get(Contact.USER_TEL));
 			edit.putExtra(Contact.USER_ID, contactMap.get(Contact.USER_ID));
-			edit.putExtra(ContactInfoActivity.COMMAND, SimpleSIM.ContextMenuOption.EDIT);
+			edit.putExtra(ContactInfoActivity.COMMAND,
+					SimpleSIM.ContextMenuOption.EDIT);
 
 			activity.startActivityForResult(edit, 0);
 			break;
@@ -157,21 +162,47 @@ public class ActivityAction {
 			break;
 		case ContextMenuOption.NEW_SIM:
 			Intent newsim = new Intent();
-			newsim.putExtra(ContactInfoActivity.COMMAND, SimpleSIM.ContextMenuOption.NEW_SIM);
+			newsim.putExtra(ContactInfoActivity.COMMAND,
+					SimpleSIM.ContextMenuOption.NEW_SIM);
 			newsim.setClass(activity, ContactInfoActivity.class);
 			activity.startActivityForResult(newsim, 0);
 			break;
 		case ContextMenuOption.DELETE:
-			int state = activity.ma.deleteContact(selectedcontact);
-			if (state == 0) {
-				Toast.makeText(activity,
-						"删除 " + selectedcontact.toString() + " 成功",
-						Toast.LENGTH_LONG).show();
-			} else {
-				Toast.makeText(activity,
-						"删除 " + selectedcontact.toString() + " 失败",
-						Toast.LENGTH_LONG).show();
-			}
+			AlertDialog dialog = new AlertDialog.Builder(activity)
+					.setTitle("删除联系人")
+					.setMessage(
+							"确定要删除联系人？" + "\r\n姓名:"
+									+ contactMap.get(Contact.USER_NAME)
+									+ "\r\n电话:"
+									+ contactMap.get(Contact.USER_TEL)
+									+ "\r\n编号:"
+									+ Integer.parseInt(contactMap.get(Contact.USER_ID))+1)
+					.setPositiveButton("删除", new OnClickListener() {
+
+						public void onClick(DialogInterface dialog, int which) {
+							int state = activity.ma
+									.deleteContact(selectedcontact);
+							if (state == 1) {
+								Toast.makeText(
+										activity,
+										"删除 " + selectedcontact.toString()
+												+ " 成功", Toast.LENGTH_LONG)
+										.show();
+							} else {
+								Toast.makeText(
+										activity,
+										"删除 " + selectedcontact.toString()
+												+ " 失败", Toast.LENGTH_LONG)
+										.show();
+							}
+
+						}
+					}).setNegativeButton("取消", new OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					}).show();
+
 			break;
 		}
 

@@ -35,8 +35,8 @@ public class Contact implements Comparable<Contact>,Serializable {
 	}
 
 	public Contact(String name, String tel) {
-		this.name = name;
-		this.tel = tel;
+		this.name = name.trim();
+		this.tel = tel.trim();
 	}
 
 	public String getName() {
@@ -44,7 +44,7 @@ public class Contact implements Comparable<Contact>,Serializable {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = name.trim();
 	}
 
 	public String getTel() {
@@ -52,7 +52,7 @@ public class Contact implements Comparable<Contact>,Serializable {
 	}
 
 	public void setTel(String tel) {
-		this.tel = tel;
+		this.tel = tel.trim();
 	}
 
 	public String getId() {
@@ -60,7 +60,7 @@ public class Contact implements Comparable<Contact>,Serializable {
 	}
 
 	public void setId(String _id) {
-		this._id = _id;
+		this._id = _id.trim();
 	}
 
 	public String getQuanpinName() {
@@ -68,7 +68,7 @@ public class Contact implements Comparable<Contact>,Serializable {
 	}
 
 	public void setQuanpinName(String quanpinName) {
-		this.quanpinName = quanpinName;
+		this.quanpinName = quanpinName.trim();
 	}
 
 	@Override
