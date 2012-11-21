@@ -1,0 +1,8 @@
+/bin
+/libs
+*.jar
+*.log
+*.class
+*.png
+*.gif
+*.jpg

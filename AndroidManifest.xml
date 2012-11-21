@@ -1,0 +1,53 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.daoiqi.simassaitant"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="15" />
+<!--    添加访问手机位置的权限  -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+- 
+<!--    添加访问手机状态的权限  -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />  
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".SIMActivity"
+            android:label="@string/title_activity_sim" >
+        </activity>
+        <activity
+            android:name=".SimpleSIM"
+            android:label="@string/title_activity_simple_sim" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".test1.Demo_telephonymanagerActivity"
+            android:label="@string/title_activity_demo_telephonymanager" >
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".ContactInfoActivity"
+            android:label="@string/contact_info_title" >
+        </activity>
+    </application>
+
+</manifest>
