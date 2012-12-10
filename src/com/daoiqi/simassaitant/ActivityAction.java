@@ -42,19 +42,13 @@ public class ActivityAction {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				// 获得选中项的HashMap对象
-				@SuppressWarnings("unchecked")
-				HashMap<String, String> map = (HashMap<String, String>) listview
-						.getItemAtPosition(arg2);
-				String name = map.get(Contact.USER_NAME);
-				String tel = map.get(Contact.USER_TEL);
-				// Toast.makeText(getApplicationContext(),
-				// "你选择了第"+arg2+"个Item，itemTitle的值是："+name+"itemContent的值是:"+tel,
-				// Toast.LENGTH_SHORT).show();
+				
+				Contact contact = (Contact)listview.getAdapter().getItem(arg2);
 
-				if (tel != null) {
+				if (contact != null) {
 					Intent phoneIntent = new Intent(
 					// Intent.ACTION_CALL
-							Intent.ACTION_DIAL, Uri.parse("tel:" + tel));
+							Intent.ACTION_DIAL, Uri.parse("tel:" + contact.getTel()));
 					activity.startActivity(phoneIntent);
 				} else {
 					Toast.makeText(activity.getApplicationContext(), "不能输入为空",
